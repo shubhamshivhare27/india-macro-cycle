@@ -12,33 +12,33 @@
   },
 
   "pmi_manufacturing": {
-    "value": null,
+    "value": 58.5,
     "unit": "index (>55 Bullish | 50-55 Neutral | <50 Bearish)",
-    "last_updated": "",
+    "last_updated": "2026-04-18",
     "source_note": "S&P Global India Manufacturing PMI",
     "example": 56.4
   },
 
   "housing_starts": {
-    "value": null,
+    "value": "Rising",
     "unit": "text: Rising / Stable / Falling",
-    "last_updated": "",
+    "last_updated": "2026-04-18",
     "source_note": "Anarock / PropEquity quarterly new launches",
     "example": "Rising"
   },
 
   "earnings_growth": {
-    "value": null,
+    "value": 15.2,
     "unit": "% YoY (>15% Bullish | 8-15% Neutral | <8% Bearish)",
-    "last_updated": "",
+    "last_updated": "2026-04-18",
     "source_note": "Nifty 50 aggregate PAT growth post quarterly results",
     "example": 18.5
   },
 
   "unemployment_rate": {
-    "value": null,
+    "value": 7.8,
     "unit": "% (<6% Bullish | 6-8% Neutral | >8% Bearish)",
-    "last_updated": "",
+    "last_updated": "2026-04-18",
     "source_note": "CMIE 30-day rolling unemployment rate",
     "example": 7.8
   }

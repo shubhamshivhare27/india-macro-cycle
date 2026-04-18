@@ -69,6 +69,9 @@ def fetch_nifty_6m_change() -> dict:
         nifty = yf.download("^NSEI", period="8mo", interval="1d", progress=False, auto_adjust=True)
         if nifty.empty:
             raise ValueError("Empty data from yfinance")
+        # Flatten MultiIndex columns if yfinance returns them
+        if isinstance(nifty.columns, pd.MultiIndex):
+            nifty.columns = nifty.columns.get_level_values(0)
         close = nifty["Close"].dropna()
         if len(close) < 126:
             raise ValueError("Insufficient history")

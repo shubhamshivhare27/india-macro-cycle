@@ -14,6 +14,7 @@ import traceback
 from pathlib import Path
 
 import requests
+import pandas as pd
 from bs4 import BeautifulSoup
 
 logger = logging.getLogger("macro_cycle")

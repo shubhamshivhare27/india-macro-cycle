@@ -181,7 +181,17 @@ def fetch_repo_rate_trend() -> dict:
 # ════════════════════════════════════════════════════════════
 #  4. CREDIT GROWTH YoY % — RBI DBIE
 # ════════════════════════════════════════════════════════════
-def fetch_credit_growth() -> dict:
+def fetch_credit_growth(manual_value=None) -> dict:
+    d = _base("credit_growth", "Credit Growth YoY", "%")
+    if manual_value is not None:
+        val = float(str(manual_value).strip())
+        trend = "Strong" if val > 15 else "Moderate" if val >= 8 else "Weak"
+        _ok(d, f"{val:.1f}%", None,
+            "Manual entry (weekly_inputs.json) — verify vs RBI WSS",
+            "https://rbi.org.in/Scripts/BS_ViewBulletin.aspx",
+            "Latest fortnightly", trend,
+            "Non-food credit growth YoY — RBI H.1 fortnightly release")
+        return d
     d = _base("credit_growth", "Credit Growth YoY", "%")
     # RBI Statistical Releases — Scheduled Commercial Banks
     url = "https://dbie.rbi.org.in/DBIE/dbie.rbi?site=publications#!4"
@@ -489,7 +499,17 @@ def fetch_unemployment(gsheet_value=None) -> dict:
 # ════════════════════════════════════════════════════════════
 #  13. BANK NPA RATIO — RBI FSR
 # ════════════════════════════════════════════════════════════
-def fetch_bank_npa() -> dict:
+def fetch_credit_growth(manual_value=None) -> dict:
+    d = _base("credit_growth", "Credit Growth YoY", "%")
+    if manual_value is not None:
+        val = float(str(manual_value).strip())
+        trend = "Strong" if val > 15 else "Moderate" if val >= 8 else "Weak"
+        _ok(d, f"{val:.1f}%", None,
+            "Manual entry (weekly_inputs.json) — verify vs RBI WSS",
+            "https://rbi.org.in/Scripts/BS_ViewBulletin.aspx",
+            "Latest fortnightly", trend,
+            "Non-food credit growth YoY — RBI H.1 fortnightly release")
+        return d
     d = _base("bank_npa_ratio", "Bank NPA Ratio", "%")
     npa_val = None
     url = "https://tradingeconomics.com/india/non-performing-loans"

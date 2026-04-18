@@ -94,7 +94,7 @@ def fetch_indicators(manual_values: dict) -> dict:
         ("nifty_6m_change",         fetch_nifty_6m_change),
         ("pmi_manufacturing",       lambda: fetch_pmi_manufacturing(manual_values.get("pmi_manufacturing"))),
         ("repo_rate_trend",         fetch_repo_rate_trend),
-        ("credit_growth",           fetch_credit_growth),
+        ("credit_growth",           lambda: fetch_credit_growth(manual_values.get("credit_growth"))),
         ("housing_starts",          lambda: fetch_housing_starts(manual_values.get("housing_starts"))),
         ("gdp_growth",              fetch_gdp_growth),
         ("iip_growth",              fetch_iip_growth),
@@ -103,7 +103,7 @@ def fetch_indicators(manual_values: dict) -> dict:
         ("gst_collections",         fetch_gst_collections),
         ("cpi_inflation",           fetch_cpi_inflation),
         ("unemployment_rate",       lambda: fetch_unemployment(manual_values.get("unemployment_rate"))),
-        ("bank_npa_ratio",          fetch_bank_npa),
+        ("bank_npa_ratio",          lambda: fetch_bank_npa(manual_values.get("bank_npa_ratio"))),
         ("current_account_deficit", fetch_current_account_deficit),
         ("wpi_inflation",           fetch_wpi_inflation),
     ]

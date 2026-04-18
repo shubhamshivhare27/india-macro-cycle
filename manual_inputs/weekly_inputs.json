@@ -1,13 +1,14 @@
 {
   "_instructions": {
     "WHEN_TO_UPDATE": "Update this file every Sunday evening before Monday's automated run.",
-    "HOW_TO_UPDATE": "Edit the 'value' field for each indicator below. Commit and push to GitHub.",
-    "FORMAT": "Numbers as plain numbers (e.g. 56.4), text as shown (Rising/Stable/Falling).",
+    "FORMAT": "Numbers as plain numbers, text as shown (Rising/Stable/Falling).",
     "SOURCES": {
-      "pmi_manufacturing":   "S&P Global India PMI — released 1st business day of month. Check Business Standard / Economic Times.",
-      "housing_starts":      "Anarock or PropEquity quarterly launch data. Enter Rising / Stable / Falling.",
-      "earnings_growth":     "Nifty 50 aggregate PAT growth — check Motilal Oswal / Kotak quarterly earnings summary.",
-      "unemployment_rate":   "CMIE monthly headline — check Economic Times / Mint for published figure."
+      "pmi_manufacturing":   "S&P Global India PMI — Business Standard / ET on release day",
+      "housing_starts":      "Anarock / PropEquity quarterly. Enter Rising / Stable / Falling",
+      "earnings_growth":     "Nifty 50 PAT growth — Motilal Oswal / Kotak quarterly summary",
+      "unemployment_rate":   "CMIE monthly — check Economic Times / Mint",
+      "credit_growth":       "RBI WSS fortnightly — check rbi.org.in/WSS or ET",
+      "bank_npa_ratio":      "RBI FSR semi-annual — last published Dec 2024"
     }
   },
 
@@ -15,31 +16,41 @@
     "value": 58.5,
     "unit": "index (>55 Bullish | 50-55 Neutral | <50 Bearish)",
     "last_updated": "2026-04-18",
-    "source_note": "S&P Global India Manufacturing PMI",
-    "example": 56.4
+    "source_note": "S&P Global India Manufacturing PMI"
   },
 
   "housing_starts": {
     "value": "Rising",
     "unit": "text: Rising / Stable / Falling",
     "last_updated": "2026-04-18",
-    "source_note": "Anarock / PropEquity quarterly new launches",
-    "example": "Rising"
+    "source_note": "Anarock / PropEquity quarterly new launches"
   },
 
   "earnings_growth": {
     "value": 15.2,
     "unit": "% YoY (>15% Bullish | 8-15% Neutral | <8% Bearish)",
     "last_updated": "2026-04-18",
-    "source_note": "Nifty 50 aggregate PAT growth post quarterly results",
-    "example": 18.5
+    "source_note": "Nifty 50 aggregate PAT growth"
   },
 
   "unemployment_rate": {
     "value": 7.8,
     "unit": "% (<6% Bullish | 6-8% Neutral | >8% Bearish)",
     "last_updated": "2026-04-18",
-    "source_note": "CMIE 30-day rolling unemployment rate",
-    "example": 7.8
+    "source_note": "CMIE 30-day rolling unemployment rate"
+  },
+
+  "credit_growth": {
+    "value": 11.1,
+    "unit": "% YoY (>15% Bullish | 8-15% Neutral | <8% Bearish)",
+    "last_updated": "2026-04-18",
+    "source_note": "RBI WSS — Non-food bank credit growth YoY"
+  },
+
+  "bank_npa_ratio": {
+    "value": 2.6,
+    "unit": "% (<3% Bullish | 3-6% Neutral | >6% Bearish)",
+    "last_updated": "2026-04-18",
+    "source_note": "RBI Financial Stability Report Dec 2024"
   }
 }

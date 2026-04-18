@@ -87,8 +87,25 @@ def fetch_indicators(manual_values: dict) -> dict:
         fetch_credit_growth, fetch_housing_starts, fetch_gdp_growth,
         fetch_iip_growth, fetch_earnings_growth, fetch_auto_sales,
         fetch_gst_collections, fetch_cpi_inflation, fetch_unemployment,
-        fetch_bank_npa, fetch_current_account_deficit, fetch_wpi_inflation,
+        fetch_current_account_deficit, fetch_wpi_inflation,
     )
+    # Import bank NPA with fallback for renamed function
+    try:
+        from src.macro_fetcher import fetch_bank_npa
+    except ImportError:
+        try:
+            from src.macro_fetcher import fetch_bank_npa_ratio as fetch_bank_npa
+        except ImportError:
+            def fetch_bank_npa(manual_value=None):
+                from src.macro_fetcher import _base, _ok
+                d = _base("bank_npa_ratio", "Bank NPA Ratio", "%")
+                if manual_value is not None:
+                    val = float(str(manual_value).strip())
+                    trend = "Healthy" if val < 3 else "Moderate" if val < 6 else "Stressed"
+                    _ok(d, f"{val:.1f}%", None, "Manual entry (weekly_inputs.json)",
+                        "https://rbi.org.in", "Latest semi-annual", trend,
+                        "Gross NPA ratio — RBI FSR")
+                return d
 
     fetch_fns = [
         ("nifty_6m_change",         fetch_nifty_6m_change),

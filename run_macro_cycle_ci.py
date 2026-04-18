@@ -64,7 +64,7 @@ def load_manual_inputs() -> dict:
 
     data = json.loads(MANUAL_INPUT_FILE.read_text())
     result = {}
-    required = ["pmi_manufacturing", "housing_starts", "earnings_growth", "unemployment_rate"]
+    required = ["pmi_manufacturing", "housing_starts", "earnings_growth", "unemployment_rate", "credit_growth", "bank_npa_ratio"]
 
     for key in required:
         item = data.get(key, {})

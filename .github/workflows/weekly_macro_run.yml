@@ -1,0 +1,224 @@
+name: India Macro Cycle — Weekly Monday Run
+
+on:
+  # ── Automatic: Every Monday at 08:00 IST (02:30 UTC) ────────
+  schedule:
+    - cron: "30 2 * * 1"
+
+  # ── Manual trigger from GitHub UI ───────────────────────────
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run — fetch data and email report but do NOT commit history"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+      skip_email:
+        description: "Skip email — run everything but don't send email"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+
+# ── Permissions needed to commit history back to repo ─────────
+permissions:
+  contents: write
+
+jobs:
+  macro-cycle-run:
+    name: Weekly India Macro Cycle Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      # ── 1. Checkout repo ─────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      # ── 2. Set up Python ─────────────────────────────────────
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      # ── 3. Install dependencies ───────────────────────────────
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # ── 4. Validate manual inputs ─────────────────────────────
+      - name: Validate manual_inputs/weekly_inputs.json
+        run: |
+          python -c "
+          import json, sys
+          from pathlib import Path
+
+          path = Path('manual_inputs/weekly_inputs.json')
+          data = json.loads(path.read_text())
+
+          required = ['pmi_manufacturing', 'housing_starts', 'earnings_growth', 'unemployment_rate']
+          missing  = []
+          warnings = []
+
+          for key in required:
+              item = data.get(key, {})
+              val  = item.get('value')
+              if val is None or val == '':
+                  missing.append(key)
+              else:
+                  last = item.get('last_updated','')
+                  if not last:
+                      warnings.append(f'{key}: value set but last_updated is empty')
+
+          if warnings:
+              for w in warnings:
+                  print(f'::warning::{w}')
+
+          if missing:
+              for m in missing:
+                  print(f'::error::Manual input missing for: {m}')
+                  print(f'::error::Edit manual_inputs/weekly_inputs.json and set a value for \"{m}\" before Monday run.')
+              sys.exit(1)
+
+          print('✅ All 4 manual inputs are present.')
+          for key in required:
+              val = data[key]['value']
+              print(f'   {key}: {val}')
+          "
+
+      # ── 5. Run the macro cycle (headless, no Excel, email output) ──
+      - name: Run India Macro Cycle System
+        env:
+          GMAIL_USER:      ${{ secrets.GMAIL_USER }}
+          GMAIL_PASS:      ${{ secrets.GMAIL_PASS }}
+          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+          DRY_RUN:         ${{ github.event.inputs.dry_run || 'false' }}
+          SKIP_EMAIL:      ${{ github.event.inputs.skip_email || 'false' }}
+          GITHUB_ACTIONS:  "true"
+        run: |
+          python run_macro_cycle_ci.py
+
+      # ── 6. Upload email HTML as artifact ──────────────────────
+      - name: Upload email report as artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: macro-report-${{ github.run_id }}
+          path: |
+            output/email_report.html
+            output/macro_snapshot.json
+          retention-days: 90
+
+      # ── 7. Upload run log ─────────────────────────────────────
+      - name: Upload run log
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: run-log-${{ github.run_id }}
+          path: output/macro_run.log
+          retention-days: 30
+
+      # ── 8. Commit history CSV back to repo ───────────────────
+      - name: Commit history to repository
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          git config user.name  "macro-cycle-bot"
+          git config user.email "macro-cycle-bot@users.noreply.github.com"
+
+          # Stage history and snapshot (not secrets or logs)
+          git add history/macro_history.csv || true
+          git add output/macro_snapshot.json || true
+
+          # Only commit if there are changes
+          if git diff --staged --quiet; then
+            echo "No history changes to commit."
+          else
+            RUN_DATE=$(date -u +"%Y-%m-%d")
+            PHASE=$(python -c "import json; d=json.load(open('output/macro_snapshot.json')); print(d.get('cycle_result',{}).get('phase','UNKNOWN'))" 2>/dev/null || echo "UNKNOWN")
+            SCORE=$(python -c "import json; d=json.load(open('output/macro_snapshot.json')); print(round(float(d.get('cycle_result',{}).get('composite_score',0)),3))" 2>/dev/null || echo "0.000")
+            git commit -m "📊 Weekly macro run ${RUN_DATE} | Phase: ${PHASE} | Score: ${SCORE}"
+            git push
+            echo "✅ History committed and pushed."
+          fi
+
+      # ── 9. Summary in GitHub Actions UI ──────────────────────
+      - name: Write job summary
+        if: always()
+        run: |
+          python -c "
+          import json, os
+          from pathlib import Path
+
+          snap_path = Path('output/macro_snapshot.json')
+          if not snap_path.exists():
+              print('No snapshot generated.')
+              exit()
+
+          d    = json.loads(snap_path.read_text())
+          cr   = d.get('cycle_result', {})
+          inds = d.get('indicators', {})
+          phase = cr.get('phase','UNKNOWN')
+          score = cr.get('composite_score', 0)
+          mom   = cr.get('momentum','—')
+          conf  = cr.get('confidence','—')
+          rebln = '🔔 YES' if cr.get('rebalance_flag') else 'No'
+          live  = cr.get('live_count', 0)
+          est   = cr.get('estimated_count', 0)
+          manual= cr.get('manual_count', 0)
+
+          PHASE_EMOJI = {
+              'STRONG RECOVERY': '🟢',
+              'EARLY EXPANSION':  '🟢',
+              'MID CYCLE':        '🟡',
+              'LATE CYCLE':       '🟠',
+              'CONTRACTION':      '🔴',
+          }
+          emoji = PHASE_EMOJI.get(phase, '⚪')
+
+          summary = f'''
+          ## {emoji} India Macro Cycle — Weekly Report
+
+          | Metric | Value |
+          |--------|-------|
+          | **Cycle Phase** | **{phase}** |
+          | Composite Score | {score:.4f} ({score*100:.1f}%) |
+          | Momentum | {mom} |
+          | Confidence | {conf} ({live} live / {est} estimated / {manual} manual) |
+          | Rebalance Signal | {rebln} |
+
+          ### Indicator Summary
+          | Indicator | Value | Status |
+          |-----------|-------|--------|
+          '''
+          ORDER = [
+              'nifty_6m_change','pmi_manufacturing','repo_rate_trend','credit_growth','housing_starts',
+              'gdp_growth','iip_growth','earnings_growth','auto_sales','gst_collections',
+              'cpi_inflation','unemployment_rate','bank_npa_ratio','current_account_deficit','wpi_inflation'
+          ]
+          LABELS = {
+              'nifty_6m_change':'Nifty 50 6M Change','pmi_manufacturing':'PMI Manufacturing',
+              'repo_rate_trend':'Repo Rate Trend','credit_growth':'Credit Growth',
+              'housing_starts':'Housing Starts','gdp_growth':'GDP Growth',
+              'iip_growth':'IIP Production','earnings_growth':'Earnings Growth',
+              'auto_sales':'Auto Sales','gst_collections':'GST Collections',
+              'cpi_inflation':'CPI Inflation','unemployment_rate':'Unemployment',
+              'bank_npa_ratio':'Bank NPA Ratio','current_account_deficit':'Current A/C Deficit',
+              'wpi_inflation':'WPI Inflation',
+          }
+          STATUS_ICON = {'OK':'✅','ESTIMATED':'⚠️','MANUAL_REQUIRED':'❌'}
+          for key in ORDER:
+              ind  = inds.get(key, {})
+              val  = str(ind.get('value','—')) if ind.get('value') is not None else '⚠ MISSING'
+              icon = STATUS_ICON.get(ind.get('fetch_status',''), '❓')
+              summary += f'| {LABELS.get(key,key)} | {val} | {icon} |\n'
+
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as f:
+              f.write(summary)
+          print('✅ Job summary written.')
+          "

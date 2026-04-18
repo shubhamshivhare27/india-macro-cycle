@@ -1,0 +1,46 @@
+# ── Python ───────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Virtual environments ──────────────────────────────────────
+venv/
+.venv/
+env/
+.env
+
+# ── Secrets — NEVER commit these ─────────────────────────────
+.env
+*.secret
+config_local.py
+
+# ── Output folder (uploaded as GitHub Actions artifacts) ─────
+output/
+# Exception: keep snapshot for dashboard reading
+!output/.gitkeep
+
+# ── Logs ──────────────────────────────────────────────────────
+logs/
+*.log
+
+# ── Excel backups ─────────────────────────────────────────────
+data/*_backup_*.xlsx
+
+# ── OS files ─────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE ───────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+
+# ── History is committed (tracked) — do NOT ignore ──────────
+# history/macro_history.csv  ← intentionally tracked

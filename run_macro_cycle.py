@@ -189,7 +189,7 @@ def main() -> None:
             ("gst_collections",         fetch_gst_collections),
             ("cpi_inflation",           fetch_cpi_inflation),
             ("unemployment_rate",       lambda: fetch_unemployment(gsheet_values.get("unemployment_rate"))),
-            ("bank_npa_ratio",          fetch_bank_npa),
+            ("bank_npa",          fetch_bank_npa),
             ("current_account_deficit", fetch_current_account_deficit),
             ("wpi_inflation",           fetch_wpi_inflation),
         ]
@@ -242,7 +242,7 @@ def main() -> None:
                    "credit_growth":0.10,"housing_starts":0.10,"gdp_growth":0.067,
                    "iip_growth":0.067,"earnings_growth":0.067,"auto_sales":0.067,
                    "gst_collections":0.067,"cpi_inflation":0.033,"unemployment_rate":0.033,
-                   "bank_npa_ratio":0.033,"current_account_deficit":0.033,"wpi_inflation":0.033}
+                   "bank_npa":0.033,"current_account_deficit":0.033,"wpi_inflation":0.033}
         for k, w in WEIGHTS.items():
             sig = classify_signal(k, str(indicators.get(k,{}).get("value","")))
             score += w * (1.0 if sig == "Bullish" else 0.5 if sig == "Neutral" else 0.0)

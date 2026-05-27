@@ -100,52 +100,53 @@ INDICATOR_META = {
     "wpi_inflation":          {"label": "WPI Inflation",               "unit": "%",       "group": "Lagging",    "invert": True},
 }
 
-# ── Cycle phase → sector strategy map (from PPT + Excel) ─────
+# ── Cycle phase → sector strategy map (4 phases — Merrill Lynch India Model, May 2026) ───
+# Phase 1: STRONG RECOVERY   (score 0.80–1.00) = Early Expansion, GDP rebounds
+# Phase 2: MID EXPANSION     (score 0.60–0.80) = Mid Cycle, strong GDP + credit
+# Phase 3: LATE CYCLE        (score 0.40–0.60) = Peak, GDP plateaus, inflation high
+# Phase 4: CONTRACTION       (score 0.20–0.40) = Slowdown, GDP <5%, rate cuts begin
+# Below 0.20: also CONTRACTION (deep contraction)
 SECTOR_STRATEGY = {
     "STRONG RECOVERY": {
         "score_range": (0.80, 1.00),
-        "overweight":    ["Nifty Realty", "Nifty Metal", "Nifty PSU Bank", "Nifty Bank", "Nifty Auto"],
-        "neutral":       ["Nifty IT", "Nifty Infra", "Nifty Energy"],
-        "underweight":   ["Nifty FMCG", "Nifty Pharma", "Nifty Healthcare"],
-        "action":        "Maximum equity; overweight beaten-down cyclicals. Start watching for cycle-peak reversal.",
-        "etfs":          {"BANKBEES.NS":"OW","PSUBNKBEES.NS":"OW","SETFNIF50.NS":"OW",
-                          "ITBEES.NS":"N","PHARMABEES.NS":"UW","FMCGBEES.NS":"UW"},
+        "overweight":    ["Nifty Bank / Financials", "Nifty Realty", "Nifty Auto", "Nifty Infra"],
+        "neutral":       ["Nifty IT", "Nifty Healthcare"],
+        "underweight":   ["Nifty Energy", "Nifty Metal", "Nifty FMCG", "Nifty Pharma"],
+        "action":        "Credit cycle turns up. Overweight Financials, Real Estate, Consumer Discretionary, Industrials. Capex plans announced.",
+        "etfs":          {"BANKBEES.NS":"OW","PSUBNKBEES.NS":"OW","INFRABEES.NS":"OW","AUTOBEES.NS":"OW",
+                          "ITBEES.NS":"N","PHARMABEES.NS":"UW","FMCGBEES.NS":"UW",
+                          "METALBEES.NS":"UW","ENERGYBEES.NS":"UW"},
     },
-    "EARLY EXPANSION": {
+    "MID EXPANSION": {
         "score_range": (0.60, 0.80),
-        "overweight":    ["Nifty Bank", "Nifty Metal", "Nifty Auto", "Nifty Infra", "Nifty Realty"],
-        "neutral":       ["Nifty IT", "Nifty Energy", "Nifty PSU Bank"],
-        "underweight":   ["Nifty FMCG", "Nifty Pharma", "Nifty Healthcare"],
-        "action":        "Aggressively overweight cyclicals. Add mid/small caps in outperforming sectors.",
-        "etfs":          {"BANKBEES.NS":"OW","ITBEES.NS":"N","PHARMABEES.NS":"UW",
-                          "FMCGBEES.NS":"UW","METALBEES.NS":"OW","INFRABEES.NS":"OW"},
-    },
-    "MID CYCLE": {
-        "score_range": (0.40, 0.60),
-        "overweight":    ["Nifty Bank", "Nifty Auto", "Nifty IT", "Nifty Energy"],
-        "neutral":       ["Nifty Metal", "Nifty Infra", "Nifty PSU Bank"],
-        "underweight":   ["Nifty Realty", "Nifty Healthcare", "Nifty Utilities"],
-        "action":        "Balanced allocation. Follow relative-strength signals monthly.",
-        "etfs":          {"BANKBEES.NS":"OW","ITBEES.NS":"OW","PHARMABEES.NS":"N",
-                          "FMCGBEES.NS":"N","METALBEES.NS":"N","INFRABEES.NS":"N"},
+        "overweight":    ["Nifty IT", "Nifty Metal", "Nifty Energy", "Nifty Infra"],
+        "neutral":       ["Nifty Bank / Financials", "Nifty Auto"],
+        "underweight":   ["Nifty Pharma", "Nifty FMCG", "Nifty Healthcare"],
+        "action":        "Strong earnings growth. IT + Materials/Metals + Energy + Capex industrials. Commodity cycle up. Global IT demand rises.",
+        "etfs":          {"ITBEES.NS":"OW","METALBEES.NS":"OW","ENERGYBEES.NS":"OW","INFRABEES.NS":"OW",
+                          "BANKBEES.NS":"N","AUTOBEES.NS":"N",
+                          "PHARMABEES.NS":"UW","FMCGBEES.NS":"UW"},
     },
     "LATE CYCLE": {
-        "score_range": (0.20, 0.40),
-        "overweight":    ["Nifty Energy", "Nifty FMCG", "Nifty Pharma", "Nifty IT"],
-        "neutral":       ["Nifty Metal", "Nifty Infra", "Nifty Bank"],
-        "underweight":   ["Nifty Realty", "Nifty Auto", "Nifty PSU Bank"],
-        "action":        "Rotate defensive. Reduce beta. Tighten quality requirements.",
-        "etfs":          {"BANKBEES.NS":"UW","ITBEES.NS":"OW","PHARMABEES.NS":"OW",
-                          "FMCGBEES.NS":"OW","METALBEES.NS":"N","INFRABEES.NS":"UW"},
+        "score_range": (0.40, 0.60),
+        "overweight":    ["Nifty Energy", "Nifty Metal", "Nifty Healthcare", "Nifty FMCG"],
+        "neutral":       ["Nifty IT", "Nifty Infra"],
+        "underweight":   ["Nifty Bank / Financials", "Nifty Realty", "Nifty Auto"],
+        "action":        "Inflation hedge. Defensive rotation. Rate sensitivity hits banks/realty. Energy and materials at commodity peak.",
+        "etfs":          {"ENERGYBEES.NS":"OW","METALBEES.NS":"OW","PHARMABEES.NS":"OW","FMCGBEES.NS":"OW",
+                          "ITBEES.NS":"N","INFRABEES.NS":"N",
+                          "BANKBEES.NS":"UW","AUTOBEES.NS":"UW","PSUBNKBEES.NS":"UW"},
     },
     "CONTRACTION": {
-        "score_range": (0.00, 0.20),
-        "overweight":    ["Nifty FMCG", "Nifty Pharma", "Nifty Healthcare", "Nifty IT"],
+        "score_range": (0.00, 0.40),
+        "overweight":    ["Nifty FMCG", "Nifty Healthcare", "Nifty Pharma", "Nifty IT"],
         "neutral":       ["Nifty Energy"],
-        "underweight":   ["Nifty Bank", "Nifty Realty", "Nifty Metal", "Nifty Auto", "Nifty Infra"],
-        "action":        "Maximum defensive. Earnings visibility + inelastic demand + dividend yield.",
-        "etfs":          {"BANKBEES.NS":"UW","ITBEES.NS":"OW","PHARMABEES.NS":"OW",
-                          "FMCGBEES.NS":"OW","METALBEES.NS":"UW","GOLDBEES.NS":"OW"},
+        "underweight":   ["Nifty Bank / Financials", "Nifty Realty", "Nifty Metal", "Nifty Auto", "Nifty Infra"],
+        "action":        "Earnings visibility, inelastic demand, safe-haven, dividend yield. Avoid all cyclicals.",
+        "etfs":          {"FMCGBEES.NS":"OW","PHARMABEES.NS":"OW","ITBEES.NS":"OW",
+                          "ENERGYBEES.NS":"N",
+                          "BANKBEES.NS":"UW","METALBEES.NS":"UW","AUTOBEES.NS":"UW",
+                          "INFRABEES.NS":"UW","PSUBNKBEES.NS":"UW"},
     },
 }
 

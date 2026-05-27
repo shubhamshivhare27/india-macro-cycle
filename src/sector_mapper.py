@@ -15,43 +15,35 @@ logger = logging.getLogger("macro_cycle")
 # ── Full sector strategy from PPT + Excel ────────────────────
 SECTOR_STRATEGY = {
     "STRONG RECOVERY": {
-        "overweight":  ["Nifty Bank / Financials", "Nifty Realty", "Nifty Metal", "Nifty PSU Bank", "Nifty Auto"],
-        "neutral":     ["Nifty IT", "Nifty Infra", "Nifty Energy"],
-        "underweight": ["Nifty FMCG", "Nifty Pharma", "Nifty Healthcare"],
-        "action": "Maximum equity. Overweight beaten-down cyclicals (Realty, Metals, PSU Banks). Start watching for cycle-peak reversal signals.",
-        "market_outlook": "Euphoric; highest returns and highest reversal risk",
-        "model_years": "2009-10, 2003-04",
+        "overweight":  ["Nifty Bank / Financials", "Nifty Realty", "Nifty Auto", "Nifty Infra"],
+        "neutral":     ["Nifty IT", "Nifty Healthcare"],
+        "underweight": ["Nifty Energy", "Nifty Metal", "Nifty FMCG", "Nifty Pharma"],
+        "action": "Credit cycle turns up. Consumers resume spending. Capex plans announced. Overweight Financials, Real Estate, Consumer Discretionary, Industrials.",
+        "market_outlook": "Strongly Bullish; +20-40% possible",
+        "model_years": "2009-10, 2003-04, 2020-21",
     },
-    "EARLY EXPANSION": {
-        "overweight":  ["Nifty Bank / Financials", "Nifty Metal", "Nifty Auto", "Nifty Infra", "Nifty Realty"],
-        "neutral":     ["Nifty IT", "Nifty Energy", "Nifty PSU Bank"],
-        "underweight": ["Nifty FMCG", "Nifty Pharma", "Nifty Healthcare"],
-        "action": "Aggressively overweight cyclicals. Add mid/small caps in outperforming sectors.",
-        "market_outlook": "Strong bull market; +20-40% possible",
-        "model_years": "2014-15, 2021-22",
-    },
-    "MID CYCLE": {
-        "overweight":  ["Nifty Bank / Financials", "Nifty IT", "Nifty Auto", "Nifty Energy"],
-        "neutral":     ["Nifty Metal", "Nifty Infra", "Nifty PSU Bank"],
-        "underweight": ["Nifty Realty", "Nifty Healthcare", "Nifty FMCG"],
-        "action": "Balanced allocation. Follow relative-strength signals monthly. Mixed sector performance.",
-        "market_outlook": "Steady +10-18% annually",
-        "model_years": "2016-17, 2023-24",
+    "MID EXPANSION": {
+        "overweight":  ["Nifty IT", "Nifty Metal", "Nifty Energy", "Nifty Infra"],
+        "neutral":     ["Nifty Bank / Financials", "Nifty Auto"],
+        "underweight": ["Nifty Pharma", "Nifty FMCG", "Nifty Healthcare"],
+        "action": "Strong earnings growth. Commodity cycle up. Global IT demand rises. IT + Materials/Metals + Energy + Capex industrials.",
+        "market_outlook": "Bullish; steady +10-20% annually",
+        "model_years": "2014-15, 2021-22, 2023-24",
     },
     "LATE CYCLE": {
-        "overweight":  ["Nifty Energy", "Nifty FMCG", "Nifty Pharma", "Nifty IT"],
-        "neutral":     ["Nifty Metal", "Nifty Infra", "Nifty Bank"],
-        "underweight": ["Nifty Realty", "Nifty Auto", "Nifty PSU Bank"],
-        "action": "Rotate defensive. Reduce beta. Tighten quality. Watch for cycle turn.",
-        "market_outlook": "Flat to -10%; high sector dispersion",
+        "overweight":  ["Nifty Energy", "Nifty Metal", "Nifty Healthcare", "Nifty FMCG"],
+        "neutral":     ["Nifty IT", "Nifty Infra"],
+        "underweight": ["Nifty Bank / Financials", "Nifty Realty", "Nifty Auto"],
+        "action": "Inflation hedge. Defensive rotation. Rate sensitivity hits banks/realty. Energy and materials at commodity peak.",
+        "market_outlook": "Cautious/Selective; flat to -10%; high dispersion",
         "model_years": "2011-12, 2018-19",
     },
     "CONTRACTION": {
-        "overweight":  ["Nifty FMCG", "Nifty Pharma", "Nifty Healthcare", "Nifty IT (large cap)"],
+        "overweight":  ["Nifty FMCG", "Nifty Healthcare", "Nifty Pharma", "Nifty IT"],
         "neutral":     ["Nifty Energy"],
-        "underweight": ["Nifty Bank", "Nifty Realty", "Nifty Metal", "Nifty Auto", "Nifty Infra"],
-        "action": "Maximum defensive. Earnings visibility, inelastic demand, dividend yield, Gold.",
-        "market_outlook": "Bear market; capital preservation priority",
+        "underweight": ["Nifty Bank / Financials", "Nifty Realty", "Nifty Metal", "Nifty Auto", "Nifty Infra"],
+        "action": "Earnings visibility, inelastic demand, safe-haven, dividend yield. Avoid all cyclicals. Rate cuts begin.",
+        "market_outlook": "Bearish; capital preservation priority",
         "model_years": "2019-20, 2008-09",
     },
 }
@@ -69,32 +61,31 @@ ETF_MAP = {
     "SETFNIF50.NS":  {"name": "Nifty 50",         "sector": "Broad Market"},
 }
 
-# Phase → ETF weight stance
+# Phase → ETF weight stance (4 phases — Merrill Lynch India Model, May 2026)
 PHASE_ETF_STANCE = {
     "STRONG RECOVERY": {
-        "BANKBEES.NS":"OW","PSUBNKBEES.NS":"OW","METALBEES.NS":"OW",
+        "BANKBEES.NS":"OW","PSUBNKBEES.NS":"OW","INFRABEES.NS":"OW","AUTOBEES.NS":"OW",
         "ITBEES.NS":"N","PHARMABEES.NS":"UW","FMCGBEES.NS":"UW",
-        "INFRABEES.NS":"N","GOLDBEES.NS":"UW","SETFNIF50.NS":"OW",
+        "METALBEES.NS":"UW","ENERGYBEES.NS":"UW","GOLDBEES.NS":"UW","SETFNIF50.NS":"OW",
     },
-    "EARLY EXPANSION": {
-        "BANKBEES.NS":"OW","METALBEES.NS":"OW","INFRABEES.NS":"OW",
-        "ITBEES.NS":"N","PHARMABEES.NS":"UW","FMCGBEES.NS":"UW",
-        "PSUBNKBEES.NS":"N","GOLDBEES.NS":"UW","SETFNIF50.NS":"OW",
-    },
-    "MID CYCLE": {
-        "BANKBEES.NS":"OW","ITBEES.NS":"OW","PHARMABEES.NS":"N",
-        "FMCGBEES.NS":"N","METALBEES.NS":"N","INFRABEES.NS":"N",
-        "PSUBNKBEES.NS":"N","GOLDBEES.NS":"UW","SETFNIF50.NS":"OW",
+    "MID EXPANSION": {
+        "ITBEES.NS":"OW","METALBEES.NS":"OW","ENERGYBEES.NS":"OW","INFRABEES.NS":"OW",
+        "BANKBEES.NS":"N","AUTOBEES.NS":"N","PSUBNKBEES.NS":"N",
+        "PHARMABEES.NS":"UW","FMCGBEES.NS":"UW",
+        "GOLDBEES.NS":"UW","SETFNIF50.NS":"OW",
     },
     "LATE CYCLE": {
-        "BANKBEES.NS":"UW","ITBEES.NS":"OW","PHARMABEES.NS":"OW",
-        "FMCGBEES.NS":"OW","METALBEES.NS":"N","INFRABEES.NS":"UW",
-        "PSUBNKBEES.NS":"UW","GOLDBEES.NS":"OW","SETFNIF50.NS":"N",
+        "ENERGYBEES.NS":"OW","METALBEES.NS":"OW","PHARMABEES.NS":"OW","FMCGBEES.NS":"OW",
+        "ITBEES.NS":"N","INFRABEES.NS":"N",
+        "BANKBEES.NS":"UW","AUTOBEES.NS":"UW","PSUBNKBEES.NS":"UW",
+        "GOLDBEES.NS":"OW","SETFNIF50.NS":"N",
     },
     "CONTRACTION": {
-        "BANKBEES.NS":"UW","ITBEES.NS":"OW","PHARMABEES.NS":"OW",
-        "FMCGBEES.NS":"OW","METALBEES.NS":"UW","INFRABEES.NS":"UW",
-        "PSUBNKBEES.NS":"UW","GOLDBEES.NS":"OW","SETFNIF50.NS":"UW",
+        "FMCGBEES.NS":"OW","PHARMABEES.NS":"OW","ITBEES.NS":"OW",
+        "ENERGYBEES.NS":"N",
+        "BANKBEES.NS":"UW","METALBEES.NS":"UW","AUTOBEES.NS":"UW",
+        "INFRABEES.NS":"UW","PSUBNKBEES.NS":"UW",
+        "GOLDBEES.NS":"OW","SETFNIF50.NS":"UW",
     },
 }
 
@@ -187,7 +178,7 @@ def _tag_etf(cycle_stance: str, rsi, momentum_4w, ma_signal) -> str:
 
 def get_sector_recommendations(phase: str) -> dict:
     """Full sector + ETF recommendation for the given phase."""
-    strategy  = SECTOR_STRATEGY.get(phase, SECTOR_STRATEGY["MID CYCLE"])
+    strategy  = SECTOR_STRATEGY.get(phase, SECTOR_STRATEGY["MID EXPANSION"])
     stances   = PHASE_ETF_STANCE.get(phase, {})
     tickers   = list(ETF_MAP.keys())
 

@@ -21,9 +21,12 @@ OUTPUT_CELLS = {
 
 PHASE_CLEAN = {
     "strong recovery": "STRONG RECOVERY",
-    "early expansion": "EARLY EXPANSION",
-    "mid cycle":       "MID CYCLE",
+    "early recovery":  "STRONG RECOVERY",
+    "mid expansion":   "MID EXPANSION",
+    "early expansion": "MID EXPANSION",
+    "mid cycle":       "MID EXPANSION",
     "late cycle":      "LATE CYCLE",
+    "slowdown":        "LATE CYCLE",
     "contraction":     "CONTRACTION",
 }
 
@@ -37,11 +40,11 @@ def _parse_phase(label_str: str) -> str:
     return "UNKNOWN"
 
 def _score_to_phase(score: float) -> str:
-    if score >= 0.80: return "STRONG RECOVERY"
-    if score >= 0.60: return "EARLY EXPANSION"
-    if score >= 0.40: return "MID CYCLE"
-    if score >= 0.20: return "LATE CYCLE"
-    return "CONTRACTION"
+    if score >= 0.80: return "STRONG RECOVERY"      # Phase 1: 0.80-1.00
+    if score >= 0.60: return "MID EXPANSION"         # Phase 2: 0.60-0.80
+    if score >= 0.40: return "LATE CYCLE"            # Phase 3: 0.40-0.60
+    if score >= 0.20: return "CONTRACTION"           # Phase 4: 0.20-0.40
+    return "CONTRACTION"                             # Deep contraction: 0.00-0.20
 
 
 def read_from_excel(excel_path: Path, sheet_name: str, retries: int = 3) -> dict:
@@ -178,9 +181,8 @@ def print_cycle_result(result: dict) -> None:
 
     PHASE_COLOURS = {
         "STRONG RECOVERY": Fore.GREEN + Style.BRIGHT,
-        "EARLY EXPANSION": Fore.GREEN,
-        "MID CYCLE":       Fore.YELLOW,
-        "LATE CYCLE":      Fore.MAGENTA,
+        "MID EXPANSION":   Fore.GREEN,
+        "LATE CYCLE":      Fore.YELLOW,
         "CONTRACTION":     Fore.RED,
     }
     colour = PHASE_COLOURS.get(result["phase"], Fore.WHITE)
